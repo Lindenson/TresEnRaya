@@ -1,6 +1,8 @@
 var connect = require('connect');
 var serveStatic = require('serve-static');
+var path = require('path')
 
-connect()
-    .use(serveStatic(__dirname))
-    .listen(8080, () => console.log('Server running on 8080...'));
+var app = connect()
+app.use(serveStatic(path.join(__dirname, 'public')))
+app.use(serveStatic(path.join(__dirname)))
+app.listen(8080, () => console.log('Server running on 8080...'));
