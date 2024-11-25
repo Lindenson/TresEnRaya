@@ -1,51 +1,45 @@
+import * as THREE from 'three';
+import { gsap } from "gsap";
+
 //Размеры
-let board;
 const isMobile = window.innerWidth <= 768; // Ширина <= 768px считается мобильным
 const boardWidth = 3.3
 const boardOver = 0.05;
 const boardDisproportion = 1.12
 const boardHeight = 0.25
 const scale = isMobile ? 60 : 40
-
-// Загрузка звука падения
-const stoneHitSound = new Audio('./stone.mp3');
-const textHitSound = new Audio('./ooh.mp3');
+const grooveDepth = -0.04; // Насколько углублены канавки
+const grooveWidth = 0.05;  // Ширина канавок
 
 // Сцена, камера и рендерер
+let   board;
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(scale, window.innerWidth / window.innerHeight, 0.1, 800);
-camera.position.set(0.5, 3.5, 4.5);
-camera.lookAt(0, -0.1, 0.7);
 
 const renderer = new THREE.WebGLRenderer({antialias: true});
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;  // Для мягких теней
+const ambientLight = new THREE.AmbientLight(0xCDC0B3, 0.85);
+const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.5);
 
-document.body.appendChild(renderer.domElement);
-
-// Загрузка текстуры дерева
 const textureLoader = new THREE.TextureLoader();
-const woodTexture = textureLoader.load('./wood.jpg');
-const metalTexture = textureLoader.load('./metal.jpg');
-const stoneTexture = textureLoader.load('./stone.jpg');
+const woodTexture = textureLoader.load('./images/wood.jpg');
+const metalTexture = textureLoader.load('./images/metal.jpg');
+const stoneTexture = textureLoader.load('./images/stone.jpg');
+
+// Загрузка звука падения
+const stoneHitSound = new Audio('./sounds/stone.mp3');
 
 // Создаем доску с наклоном
 function createBoard() {
-    const boardGeometry = new THREE.BoxGeometry(boardWidth, boardHeight, boardWidth);
     const boardMaterial = new THREE.MeshStandardMaterial({map: woodTexture});
+    const boardGeometry = new THREE.BoxGeometry(boardWidth, boardHeight, boardWidth);
     board = new THREE.Mesh(boardGeometry, boardMaterial);
     board.receiveShadow = true;  // Плоскость будет принимать тени
     board.position.y = -0.18;
     board.rotation.x = Math.PI / 110; // Наклон доски на 5 градусов к зрителю
     scene.add(board);
 
-    // Канавки для сетки
-    const grooveMaterial = new THREE.MeshStandardMaterial({color: 0x3b2400, map: woodTexture});
-    const grooveDepth = -0.04; // Насколько углублены канавки
-    const grooveWidth = 0.05;  // Ширина канавок
-
     // Вертикальные канавки
+    const grooveMaterial = new THREE.MeshStandardMaterial({color: 0x3b2400, map: woodTexture});
     const verticalGrooveGeometry = new THREE.BoxGeometry(grooveWidth, grooveDepth, 3.4);
     const groove1 = new THREE.Mesh(verticalGrooveGeometry, grooveMaterial)
     groove1.position.set(-0.48, 0.01 - grooveDepth / 2, 0.07);
@@ -64,6 +58,20 @@ function createBoard() {
     const groove4 = groove3.clone();
     groove4.position.set(0.01, 0.01 - grooveDepth / 2, 0.64);
     scene.add(groove4);
+
+    // Освещение
+    scene.add(ambientLight);
+    directionalLight.position.set(3, 5, 2); // Позиция под углом для более выразительного теневого эффекта
+    directionalLight.castShadow = true;
+    scene.add(directionalLight);
+
+    //камера
+    camera.position.set(0.5, 3.5, 4.5);
+    camera.lookAt(0, -0.1, 0.7);
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;  // Для мягких теней
 }
 
 
@@ -172,19 +180,21 @@ function makeFiguresJump(winners) {
     }, 1000);
 }
 
-// Освещение
-const ambientLight = new THREE.AmbientLight(0xCDC0B3, 0.85);
-scene.add(ambientLight);
-
-// Усиленное боковое освещение
-const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.5); // Увеличиваем интенсивность
-directionalLight.position.set(3, 5, 2); // Позиция под углом для более выразительного теневого эффекта
-directionalLight.castShadow = true;
-scene.add(directionalLight);
-
-
 // Функция рендеринга
 function animate() {
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
+}
+
+export  {
+    animate,
+    makeFiguresJump,
+    createOFalling,
+    createXFalling,
+    createBoard,
+    scene,
+    board,
+    camera,
+    renderer,
+    metalTexture
 }

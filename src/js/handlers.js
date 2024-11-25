@@ -1,3 +1,7 @@
+import * as THREE from 'three';
+import {move} from "./logic";
+import {board, camera} from "./3d_board";
+
 // Raycaster и вектор для хранения позиции курсора
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
@@ -21,7 +25,10 @@ function onMouseClick(event) {
         const row = Math.floor((localPoint.z + 3.2 / 2) / cellSize);
         const col = Math.floor((localPoint.x + 3.2 / 2) / cellSize);
 
-        console.log(`Нажата ячейка: Row ${row}, Col ${col}`);
         move(col, row);
     }
+}
+
+export {
+    onMouseClick
 }

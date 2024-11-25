@@ -22,6 +22,7 @@ Un proyecto interactivo desarrollado con **Three.js** y **GSAP** que lleva el cl
 2. Ejecutar
    ```bash
    npm install
+   npx vite build
    node server.js
 
 ## Pictures

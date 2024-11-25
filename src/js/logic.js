@@ -1,3 +1,6 @@
+import {createFallingText} from "./falling_text"
+import {makeFiguresJump, createXFalling, createOFalling} from "./3d_board"
+
 //игра
 let turn = "X";
 let counter = 0;
@@ -96,5 +99,10 @@ function showFinalMessage(winner) {
         createFallingText(` Draw!`);
     }
 }
+
+export {
+    move
+}
+
 
 

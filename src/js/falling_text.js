@@ -1,9 +1,15 @@
+import * as THREE from 'three';
+import {scene, metalTexture} from "./3d_board"
+import { gsap } from "gsap";
+
+
 // Загрузка шрифта
 const fontLoader = new THREE.FontLoader();
 let loadedFont;
-fontLoader.load('./font.json', (font) => {
+fontLoader.load('./fonts/font.json', (font) => {
     loadedFont = font; // Сохраняем шрифт для последующего использования
 });
+const textHitSound = new Audio('./sounds/ooh.mp3');
 
 // Функция создания падающей надписи
 function createFallingText(text) {
@@ -45,4 +51,8 @@ function createFallingText(text) {
                 soundPlayed = true;
         }
     }});
+}
+
+export {
+    createFallingText
 }
